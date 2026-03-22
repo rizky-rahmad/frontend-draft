@@ -1,50 +1,19 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { Search, XCircle, AlertTriangle, ArrowDownUp, Download } from "lucide-react";
+import { generateTransactionLog } from "../utils/mockData"; // Import fungsi
 
 export default function TransactionLogModal({ onClose }) {
-  // Generator Data Dummy untuk 100+ Transaksi Pola Judi Online
-  const transactionLog = useMemo(() => {
-    const data = [];
-    let currentTimestamp = new Date("2023-10-27T03:15:59"); 
-    let txId = 99950;
+  // Data lebih rapi, tidak mengotori komponen
+  const transactionLog = useMemo(() => generateTransactionLog(), []);
 
-    const nominals = ["Rp 25.000", "Rp 50.000", "Rp 50.000", "Rp 100.000", "Rp 150.000", "Rp 200.000"];
-    const sources = [
-      "E-Wallet (Dana)", 
-      "E-Wallet (OVO)", 
-      "E-Wallet (GoPay)", 
-      "Bank Transfer (BCA)", 
-      "Bank Transfer (BRI)", 
-      "Bank Transfer (Mandiri)"
-    ];
-
-    for (let i = 0; i < 100; i++) {
-      const subtractSeconds = Math.floor(Math.random() * 10) + 2;
-      currentTimestamp.setSeconds(currentTimestamp.getSeconds() - subtractSeconds);
-
-      const h = String(currentTimestamp.getHours()).padStart(2, '0');
-      const m = String(currentTimestamp.getMinutes()).padStart(2, '0');
-      const s = String(currentTimestamp.getSeconds()).padStart(2, '0');
-      
-      const nominal = nominals[Math.floor(Math.random() * nominals.length)];
-      const sumber = sources[Math.floor(Math.random() * sources.length)];
-
-      data.push({
-        id: `TX-${txId--}`,
-        waktu: `${h}:${m}:${s} WIB`,
-        nominal: nominal,
-        sumber: sumber,
-        isAnomaly: true
-      });
-    }
-
-    data.push({ id: `TX-${txId--}`, waktu: "19:35:12 WIB", nominal: "Rp 42.000", sumber: "E-Wallet (GoPay)", isAnomaly: false });
-    data.push({ id: `TX-${txId--}`, waktu: "19:10:05 WIB", nominal: "Rp 35.000", sumber: "E-Wallet (OVO)", isAnomaly: false });
-    data.push({ id: `TX-${txId--}`, waktu: "12:45:30 WIB", nominal: "Rp 125.000", sumber: "Bank Transfer (BCA)", isAnomaly: false });
-    data.push({ id: `TX-${txId--}`, waktu: "12:20:18 WIB", nominal: "Rp 28.000", sumber: "E-Wallet (Dana)", isAnomaly: false });
-
-    return data;
-  }, []);
+  // Aksesibilitas: Menutup modal dengan tombol 'Escape'
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8">

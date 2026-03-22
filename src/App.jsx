@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, Suspense, lazy } from "react";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import KpiCards from "./components/KpiCards";
 import VelocityRadar from "./components/VelocityRadar";
 import AlertsTable from "./components/AlertsTable";
-import InvestigationModal from "./components/InvestigationModal";
-import TransactionLogModal from "./components/TransactionLogModal";
 import "tailwindcss";
+
+// Lazy load modals
+const InvestigationModal = lazy(() => import("./components/InvestigationModal"));
+const TransactionLogModal = lazy(() => import("./components/TransactionLogModal"));
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
   const [time, setTime] = useState("");
-  
-  // STATE BARU: Untuk kontrol buka/tutup Sidebar di mode Mobile
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Update jam real-time
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -25,38 +24,46 @@ export default function App() {
       setTime(`${hours}.${minutes}`);
     };
     updateTime();
-    const timerId = setInterval(updateTime, 1000);
+    const timerId = setInterval(updateTime, 1000); // Perbarui setiap detik
     return () => clearInterval(timerId);
   }, []);
 
+  // Gunakan useCallback agar referensi fungsi tidak berubah setiap App render
+  const handleOpenModal = useCallback(() => setIsModalOpen(true), []);
+  const handleCloseModal = useCallback(() => setIsModalOpen(false), []);
+  const handleOpenTxModal = useCallback(() => setIsTxModalOpen(true), []);
+  const handleCloseTxModal = useCallback(() => setIsTxModalOpen(false), []);
+  const toggleSidebar = useCallback(() => setIsSidebarOpen((prev) => !prev), []);
+
   return (
     <div className="flex h-screen bg-[#050B14] text-slate-300 font-sans overflow-hidden selection:bg-cyan-900 selection:text-cyan-50">
-      {/* Mengirim state isSidebarOpen dan fungsi untuk menutup ke Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
       <main className="flex-1 flex flex-col h-full relative overflow-y-auto w-full">
-        {/* Mengirim fungsi onMenuClick ke Header untuk membuka Sidebar */}
-        <Header time={time} onMenuClick={() => setIsSidebarOpen(true)} />
+        <Header time={time} onMenuClick={toggleSidebar} />
 
         <div className="p-4 sm:p-6 space-y-6">
           <KpiCards />
           <VelocityRadar time={time} />
-          <AlertsTable onOpenInvestigation={() => setIsModalOpen(true)} />
+          {/* Kirim handle yang sudah di-memoize */}
+          <AlertsTable onOpenInvestigation={handleOpenModal} />
         </div>
       </main>
 
-      {isModalOpen && (
-        <InvestigationModal 
-          onClose={() => setIsModalOpen(false)} 
-          onOpenTxLog={() => setIsTxModalOpen(true)} 
-        />
-      )}
-
-      {isTxModalOpen && (
-        <TransactionLogModal 
-          onClose={() => setIsTxModalOpen(false)} 
-        />
-      )}
+      {/* Gunakan Suspense untuk fallback loading state */}
+      <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50">Loading...</div>}>
+        {isModalOpen && (
+          <InvestigationModal 
+            onClose={handleCloseModal} 
+            onOpenTxLog={handleOpenTxModal} 
+          />
+        )}
+        {isTxModalOpen && (
+          <TransactionLogModal 
+            onClose={handleCloseTxModal} 
+          />
+        )}
+      </Suspense>
     </div>
   );
 }
