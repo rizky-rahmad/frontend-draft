@@ -12,6 +12,9 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
   const [time, setTime] = useState("");
+  
+  // STATE BARU: Untuk kontrol buka/tutup Sidebar di mode Mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Update jam real-time
   useEffect(() => {
@@ -28,12 +31,14 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-[#050B14] text-slate-300 font-sans overflow-hidden selection:bg-cyan-900 selection:text-cyan-50">
-      <Sidebar />
+      {/* Mengirim state isSidebarOpen dan fungsi untuk menutup ke Sidebar */}
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-      <main className="flex-1 flex flex-col h-full relative overflow-y-auto">
-        <Header time={time} />
+      <main className="flex-1 flex flex-col h-full relative overflow-y-auto w-full">
+        {/* Mengirim fungsi onMenuClick ke Header untuk membuka Sidebar */}
+        <Header time={time} onMenuClick={() => setIsSidebarOpen(true)} />
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6">
           <KpiCards />
           <VelocityRadar time={time} />
           <AlertsTable onOpenInvestigation={() => setIsModalOpen(true)} />

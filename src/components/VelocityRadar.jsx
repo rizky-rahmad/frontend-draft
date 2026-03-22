@@ -3,13 +3,12 @@ import { Wifi } from "lucide-react";
 
 export default function VelocityRadar({ time }) {
   return (
-    <div className="bg-[#0A1326] border border-cyan-900/40 rounded-xl p-5 shadow-lg">
-      <h3 className="text-cyan-400 text-sm font-semibold tracking-wide uppercase mb-4 flex items-center gap-2">
-        <Wifi className="w-4 h-4" /> Kecepatan Transaksi per Menit
-        (Velocity Radar)
+    <div className="bg-[#0A1326] border border-cyan-900/40 rounded-xl p-4 sm:p-5 shadow-lg w-full">
+      <h3 className="text-cyan-400 text-xs sm:text-sm font-semibold tracking-wide uppercase mb-4 flex items-center gap-2">
+        <Wifi className="w-4 h-4 shrink-0" /> <span className="truncate">Velocity Radar (Trx/Min)</span>
       </h3>
 
-      <div className="h-64 w-full relative border-b border-l border-cyan-900/50">
+      <div className="h-48 sm:h-64 w-full relative border-b border-l border-cyan-900/50">
         <div className="absolute inset-0 flex flex-col justify-between opacity-10">
           <div className="w-full h-px bg-cyan-400"></div>
           <div className="w-full h-px bg-cyan-400"></div>
@@ -18,7 +17,7 @@ export default function VelocityRadar({ time }) {
           <div className="w-full h-px bg-cyan-400"></div>
         </div>
 
-        <div className="absolute -left-10 inset-y-0 flex flex-col justify-between text-[10px] text-cyan-600 font-mono py-1">
+        <div className="absolute -left-7 sm:-left-10 inset-y-0 flex flex-col justify-between text-[8px] sm:text-[10px] text-cyan-600 font-mono py-1">
           <span>1000</span>
           <span>750</span>
           <span>500</span>
@@ -26,14 +25,14 @@ export default function VelocityRadar({ time }) {
           <span>0</span>
         </div>
 
-        <div className="absolute -bottom-6 inset-x-0 flex justify-between text-[10px] text-cyan-600 font-mono px-2">
+        <div className="absolute -bottom-5 sm:-bottom-6 inset-x-0 flex justify-between text-[8px] sm:text-[10px] text-cyan-600 font-mono px-1 sm:px-2">
           <span>14:00</span>
-          <span>14:05</span>
+          <span className="hidden sm:inline">14:05</span>
           <span>14:10</span>
-          <span>14:15</span>
+          <span className="hidden sm:inline">14:15</span>
           <span>14:20</span>
-          <span>14:25</span>
-          <span className="text-red-400">{time} (Now)</span>
+          <span className="hidden sm:inline">14:25</span>
+          <span className="text-red-400">{time}</span>
         </div>
 
         <svg
@@ -71,7 +70,7 @@ export default function VelocityRadar({ time }) {
             vectorEffect="non-scaling-stroke"
             filter="url(#glow)"
           />
-          <circle cx="850" cy="10" r="4" fill="#ef4444" className="animate-pulse" filter="url(#glow)" />
+          <circle cx="850" cy="10" r="4" sm:r="5" fill="#ef4444" className="animate-pulse" filter="url(#glow)" />
         </svg>
       </div>
     </div>
